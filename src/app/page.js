@@ -1,95 +1,70 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+"use client"
+import React, {useCallback, useEffect, useState} from 'react'
+import Header from './Components/Header'
+import Tab from "./Components/Tabs"
+import Cards from "./Components/Cards"
+import Loader from "./Components/Loader"
+import { isExpired } from './utils';
+import "./styles.css"
 
-export default function Home() {
+
+const page = () => {
+  const [selectedTab, setSelectedTab] = useState("gainers");
+  
+  const [gainers, setGainers] = useState([])
+  const [losers, setLosers] = useState([]) 
+  const [loading, setLoading] = useState(false);
+  const fetcGainersAndLosers = useCallback(async () => {
+    let cached = localStorage.getItem(`gainers_losers`);
+    cached = JSON.parse(cached);
+    if (cached) {
+      const time1 = cached.time;
+      const time2 = new Date().getTime();
+      if (cached.data["Information"] === "Thank you for using Alpha Vantage! Our standard API rate limit is 25 requests per day. Please subscribe to any of the premium plans at https://www.alphavantage.co/premium/ to instantly remove all daily rate limits.") {
+          localStorage.removeItem(`gainers_losers`)
+      } else if (!isExpired(time1, time2)) {
+        setGainers(cached.data["top_gainers"])
+        setLosers(cached.data["top_losers"]);
+        return;
+      } else {
+        localStorage.removeItem(`gainers_losers`)
+      } }
+      setLoading(true);
+      const res = await fetch(`https://www.alphavantage.co/query?function=TOP_GAINERS_LOSERS&apikey=${process.env.NEXT_PUBLIC_API_KEY}`)
+      const dataRes= await res.json();
+      if (dataRes["Information"] === "Thank you for using Alpha Vantage! Our standard API rate limit is 25 requests per day. Please subscribe to any of the premium plans at https://www.alphavantage.co/premium/ to instantly remove all daily rate limits.") {
+        setGainers([]);
+        setLosers([])
+        return;
+      }
+      if (!dataRes["top_gainers"] ) return;
+      setGainers(dataRes["top_gainers"])
+      setLosers(dataRes["top_losers"]);
+      localStorage.setItem(`gainers_losers`, JSON.stringify({data: dataRes, time: new Date().getTime()}) )
+      setLoading(false);
+    }, []);
+
+  useEffect(() => {
+    fetcGainersAndLosers()
+  }, [fetcGainersAndLosers])
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.js</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
+   <>
+    <Header />
+     { loading && <Loader />}
+    {!loading &&  (<div
+     className="explore-complete-container"
+    >
+
+      <div className='tabs-container'>
+          <Tab title={"Top Gainers"} isSelected={selectedTab==="gainers"} onClick={() => setSelectedTab("gainers")} />
+          <Tab title={"Top Losers"} isSelected={selectedTab==="losers"} onClick={() => setSelectedTab("losers")} />
       </div>
+      
+      <Cards data={selectedTab === 'gainers' ? gainers : losers} />
 
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore starter templates for Next.js.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  );
+  </div>)}
+  </>
+  )
 }
+
+export default page
