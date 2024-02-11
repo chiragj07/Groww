@@ -1,0 +1,28 @@
+.slider-bar{
+  width: 100%;
+  height: 4px;
+  border-radius: 16px;
+  background-color: rgba(2, 91, 174, 0.5);
+  position: relative;
+  /* margin-top: 32px; */
+}
+.slider-container{
+  /* width: 60%; */
+  display: flex;
+  flex-direction: column;
+  align-self: center;
+  align-items: center;
+}
+.price-container{
+  display: flex;
+}
+
+.price-title{
+  font-size: 16px;
+  font-weight: 500;
+}
+.price-value{
+  font-size: 16px;
+  font-weight: 700;
+  margin-left: 4px;
+}

@@ -1,0 +1,29 @@
+.product-complete-container{
+  display: flex;
+  justify-content: space-between;
+  width: 85%;
+  margin: auto;
+  padding: 10px;
+}
+.main-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.no-data-container{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 400px;
+  width: 100%;
+  font-size: 48px;
+  font-weight: 700;
+}
+@media only screen and (max-width: 920px) {
+  .product-complete-container {
+    flex-direction: column;
+  }
+}
+
+
+

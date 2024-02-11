@@ -1,0 +1,25 @@
+.market-container {
+  display: grid;
+  width: 100%;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 8px;
+  margin-top: 24px;
+}
+
+@media only screen and (max-width: 920px) {
+  .market-container {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+}
+
+@media only screen and (max-width: 720px) {
+  .market-container {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media only screen and (max-width: 480px) {
+  .market-container {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,31 @@
+.product-header-container {
+  display: flex;
+  justify-content: space-between; 
+  padding: 4px;
+  
+}
+.product-details-header {
+  display: flex;
+  align-items: center;
+}
+.product-name-symbol {
+  display: "flex";
+  align-self: stretch;
+  margin-left: 32px;
+}
+.product-details-header h1{
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.product-details-header p{
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.product-exchange{
+  align-self: flex-end;
+  font-size: 20px;
+  font-weight: 500;
+  color: #AFAEAE;
+}
